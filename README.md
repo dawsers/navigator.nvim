@@ -178,3 +178,25 @@ vim.keymap.set("n", "<space>n", function()
   end, { desc = 'navigator' })
 ```
 
+If you use [aerial.nvim](https://github.com/stevearc/aerial.nvim), and have it
+installed in your system, you can re-use its queries if you are comfortable
+with them. For example, for a *lua* buffer:
+
+``` lua
+local query_list = {
+  {
+    parser = 'lua',
+    -- Search for the aerial.scm queries for lua in your runtime path and load
+    -- them
+    query = require('navigator.queries').read_file(vim.api.nvim_get_runtime_file(string.format("queries/%s/%s.scm", 'lua', 'aerial'), true)[1]),
+  },
+}
+require('navigator').navigate({
+  query_list = query_list,
+})
+```
+
+It will load the queries from the `aerial.scm` file, and you can filter which
+ones you want to use with the three Telescope pickers: *main*, *languages* and
+*symbols*.
+
