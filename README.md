@@ -83,8 +83,27 @@ If you don't specify any `language_list`, `navigator.nvim`
 will detect all the languages embedded in the file and prepare the queries for
 all of them.
 
+``` lua
+-- language_list is just an array of languages to consider, for example
+local language_list = { 'markdown', 'lua' }
+```
+
 If you don't specify any `symbol_list`, `navigator.nvim`
 will apply the queries for all the symbols in the query_list.
+
+``` lua
+-- symbol_list is a table of allowed symbols per language, for example
+local symbol_list = {
+  -- Allow only headers and tags for the markdown parser
+  markdown = { 'definition.header', 'definition.regex_tag' },
+  -- The lua parser will ignore any caption not including `function`
+  lua = { 'function' },
+}
+-- We consider all symbols for languages not on the list
+
+-- This call would use the symbol_list filter above
+require('navigator').navigate({ symbol_list = symbol_list })
+```
 
 So those two lists are just for convenience, in case your query files contain
 lots of captures and you want to call `navigator.nvim` with a more reduced

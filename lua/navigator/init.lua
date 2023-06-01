@@ -9,13 +9,12 @@ end
 
 local M = {}
 
-local function inlist(symbol, symbol_list)
+local function inlist(symbol, language, symbol_list)
   -- Empty symbol list means all symbols
-  if not symbol_list or #symbol_list == 0 then
+  if not symbol_list or not symbol_list[language] then
     return true
   end
-
-  for _, value in ipairs(symbol_list) do
+  for _, value in ipairs(symbol_list[language]) do
     if string.match(symbol, value) then
       return true
     end
@@ -76,7 +75,7 @@ local function get_ts_symbols(languages, query_list)
   return file_symbols
 end
 
-local function get_symbols(bufnr, query_list)
+local function get_symbols(bufnr, query_list, symbol_list)
   -- Get languages in buffer
   local languages = {}
   -- Get file parser
@@ -106,9 +105,11 @@ local function get_symbols(bufnr, query_list)
       file_symbols[v.language] = {}
     end
     for _, symbol in ipairs(v.symbols) do
-      if done[v.language][symbol] == nil then
-        done[v.language][symbol] = true
-        table.insert(file_symbols[v.language], symbol)
+      if inlist(symbol, v.language, symbol_list) then
+        if done[v.language][symbol] == nil then
+          done[v.language][symbol] = true
+          table.insert(file_symbols[v.language], symbol)
+        end
       end
     end
   end
@@ -124,7 +125,7 @@ local function get_regex_query_results(bufnr, buf_languages, query_list, languag
       for _, query in ipairs(query_list) do
         if query.parser == language and query.regex and query.regex ~= '' then
           for _, regex in ipairs(query.regex) do
-            if inlist(regex.name, symbol_list) then
+            if inlist(regex.name, language, symbol_list) then
               local cregex = vim.regex(regex.expr)
               if cregex then
                 table.insert(regexes, { language = language, name = regex.name, expr = cregex })
@@ -173,7 +174,7 @@ local function get_ts_query_results(bufnr, query_list, language_list, symbol_lis
             for _, matches, _ in parsed:iter_matches(tree:root(), bufnr, 0, last) do
               for id, match in pairs(matches) do
                 local symbol = parsed.captures[id]
-                if inlist(symbol, symbol_list) then
+                if inlist(symbol, language, symbol_list) then
                   local srow, scol, erow, ecol = match:range(false)
                   local text = vim.api.nvim_buf_get_lines(bufnr, srow, srow + 1, false)[1]
                   table.insert(data, { language = language,
@@ -336,7 +337,7 @@ M.navigate = function(opts)
     query_list = require('navigator.queries').queries
   end
 
-  local symbols_data = get_symbols(bufnr, query_list)
+  local symbols_data = get_symbols(bufnr, query_list, symbol_list)
   -- Create a structure with 'enabled' languages and symbols that can be updated
   -- by the pickers
   local selected_languages = {}
