@@ -316,6 +316,7 @@ local action_state = require "telescope.actions.state"
 
 M.navigate = function(opts)
   local bufnr = vim.fn.bufnr()
+  local filename = vim.api.nvim_buf_get_name(bufnr)
 
   -- For previewer highlighting
   local namespace = vim.api.nvim_create_namespace("Navigator")
@@ -428,6 +429,8 @@ M.navigate = function(opts)
         result.value = entry
         result.display = make_query_display
         result.ordinal = result.value.text
+        result.filename = filename
+        result.lnum = entry.range.srow + 1
         return result
       end,
     })

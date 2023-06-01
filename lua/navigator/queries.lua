@@ -58,6 +58,13 @@ M.queries = {
   },
   {
     parser = 'lua',
+    query = [[
+    ((function_declaration) @function)
+    ((function_definition) @function)
+    ]]
+  },
+  {
+    parser = 'lua',
     query = M.read_file(vim.api.nvim_get_runtime_file(string.format("queries/%s/%s.scm", 'lua', 'locals'), true)[1]),
   },
   --{
