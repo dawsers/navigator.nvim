@@ -96,8 +96,9 @@ will apply the queries for all the symbols in the query_list.
 local symbol_list = {
   -- Allow only headers and tags for the markdown parser
   markdown = { 'definition.header', 'definition.regex_tag' },
-  -- The lua parser will ignore any caption not including `function`
-  lua = { 'function' },
+  -- The lua parser will ignore any caption not starting with `function`
+  -- The string is a pattern, so you can use lua patterns for the match
+  lua = { '^function' },
 }
 -- We consider all symbols for languages not on the list
 
