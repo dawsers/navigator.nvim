@@ -52,10 +52,10 @@ M.queries = {
       { name = 'definition.regex_tag', expr = tag_regex },
     }
   },
-  {
-    parser = 'markdown_inline',
-    query = tag_query,
-  },
+--  {
+--    parser = 'markdown_inline',
+--    query = tag_query,
+--  },
   {
     parser = 'lua',
     query = [[
